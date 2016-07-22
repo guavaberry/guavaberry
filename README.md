@@ -3,6 +3,10 @@ Guavaberry
 
 A collection of Java libraries on hand.
 
+|Project Status|Communication|
+|:-----------:|:-----------:|
+|[![Build status](https://api.travis-ci.org/fsquillace/guavaberry.png?branch=master)](https://travis-ci.org/fsquillace/guavaberry) | [![Join the gitter chat at https://gitter.im/fsquillace/guavaberry](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fsquillace/guavaberry?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) |
+
 **Table of Contents**
 - [Description](#description)
 - [Installation](#installation)
@@ -27,6 +31,8 @@ To add a dependency on Guavaberry using Maven, use the following:
   <version>0.1.0</version>
 </dependency>
 ```
+
+Requires JDK 1.8 or higher
 
 Contributing
 ============

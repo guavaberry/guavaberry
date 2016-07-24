@@ -3,7 +3,7 @@ Guavaberry
 
 A collection of Java libraries on hand.
 
-https://fsquillace.github.io/guavaberry/0.1.0-SNAPSHOT/
+https://fsquillace.github.io/guavaberry/{{VERSION}}/
 
 |Project Status|Communication|
 |:-----------:|:-----------:|
@@ -30,7 +30,7 @@ To add a dependency on Guavaberry using Maven, use the following:
 <dependency>
   <groupId>org.guavaberry</groupId>
   <artifactId>guavaberry</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>{{VERSION}}</version>
 </dependency>
 ```
 

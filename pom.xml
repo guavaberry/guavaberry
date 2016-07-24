@@ -7,8 +7,16 @@
     <groupId>org.guavaberry</groupId>
     <artifactId>guavaberry</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <name>Guavaberry: A collection of Java libraries on hand</name>
+    <packaging>jar</packaging>
+
+    <name>Guavaberry</name>
+    <description>Guavaberry: A collection of Java libraries on hand</description>
     <url>https://github.com/fsquillace/guavaberry</url>
+    <issueManagement>
+        <url>https://github.com/fsquillace/guavaberry/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -16,11 +24,69 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+    <developers>
+        <developer>
+            <email>feel.sqoox@gmail.com</email>
+            <name>Filippo Squillace</name>
+            <url>https://github.com/fsquillace</url>
+            <id>fsquillace</id>
+        </developer>
+    </developers>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>downloads-maven-plugin</artifactId>
+                <version>0.6</version>
+                <configuration>
+                    <description>${project.name} ${project.version} release</description>
+                    <override>true</override>
+                    <includeAttached>true</includeAttached>
+                    <server>github</server>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                        <phase>site-deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <!--Disable the deploy by maven-site-plugin in favor of site-maven-plugin:-->
+                    <!--https://github.github.com/maven-plugins/site-plugin/phase.html-->
+                    <skipDeploy>true</skipDeploy>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.12</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>site-deploy</phase>
+                        <configuration>
+                            <server>github</server>
+                            <message>Building site for ${project.name} ${project.version}</message>
+                            <!-- The location where the site is uploaded -->
+                            <path>${project.version}</path>
+                            <!-- Use merge or override the content -->
+                            <merge>false</merge>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>

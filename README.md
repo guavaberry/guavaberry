@@ -1,6 +1,8 @@
 Guavaberry
 ==========
 
+[![Join the chat at https://gitter.im/fsquillace/guavaberry](https://badges.gitter.im/fsquillace/guavaberry.svg)](https://gitter.im/fsquillace/guavaberry?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A collection of Java libraries on hand.
 
 https://fsquillace.github.io/guavaberry/0.1.0-SNAPSHOT/

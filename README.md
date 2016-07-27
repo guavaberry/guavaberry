@@ -7,7 +7,7 @@ https://fsquillace.github.io/guavaberry/0.1.0-SNAPSHOT/
 
 |Project Status|Communication|
 |:-----------:|:-----------:|
-|[![Build status](https://api.travis-ci.org/fsquillace/guavaberry.png?branch=master)](https://travis-ci.org/fsquillace/guavaberry) | [![Join the gitter chat at https://gitter.im/fsquillace/guavaberry](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fsquillace/guavaberry?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) |
+|[![Build status](https://api.travis-ci.org/fsquillace/guavaberry.png?branch=master)](https://travis-ci.org/fsquillace/guavaberry) [![codecov](https://codecov.io/gh/fsquillace/guavaberry/branch/master/graph/badge.svg)](https://codecov.io/gh/fsquillace/guavaberry) | [![Join the gitter chat at https://gitter.im/fsquillace/guavaberry](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fsquillace/guavaberry?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) |
 
 **Table of Contents**
 - [Description](#description)

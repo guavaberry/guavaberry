@@ -16,6 +16,9 @@ cache:
   directories:
     - $HOME/.m2
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
 env:
   global:
     - secure: "Oz9s8Yq+briRgqh64XPnkSWFYZEUAVUIHyybVPLigjp0yaqy317aZ/gkL4SwYRBrVEjih1sWBkxy0QAmVk7wrAJHhTrPcZN3mLPm8Wkzn6t9LOu0XzNFj86XTUjCVnW9TgUqsd3ODhNDwSRDCtU7c6NqBgv+FbpTYQVw8iggJR7c+0SUmUOQpGB8DyFlotyewm9tamkH9RNebO6xtmHYxsDK2Hn5o6Y3DxgJYCWO65auiG7u8JHnpykmPh/97estKROpXjmz8u5d6V6aBJ/mSrrjc5J66+BMhpicTSVlYfDetxDYH+5AJxkPtgYjZkYn/dhHehlvuhUuYZWIjqVa/6/WT2OTRM3y80QyLLcW6hV8NX8Exx35GT6ctidlRFm7psPhVAeE1Uvs+qdXge+uauzg0l1zKRuKtr3sAYNfM1+QqnaiT6vAjZox37Tqp6LHTwpWFUIFgY0O1ddN2hpzu2L1GDgZAO6/DjKfiCdPl1NGEmMoNBjpaUzdlzSKQLyEWugx+ngJ3VFNLcamZNlN+1iqICaCYHTr+5CIyLwp6ZiSDwH6Rs/815P0Knwxj9T7DqXYwUbwlEPk89kSgBsVue0rH6SQ6JOHwDD9xzodRgS33nuD4yOYWwsqb0qwsZxzJsHm4iaD0RlgjMSMfjQtdv2q0psw6Vubqkj7yHR7adI="

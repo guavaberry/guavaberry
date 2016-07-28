@@ -59,7 +59,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.5.1</version>
                 <configuration>
                     <!--Disable the deploy by maven-site-plugin in favor of site-maven-plugin:-->
                     <!--https://github.github.com/maven-plugins/site-plugin/phase.html-->

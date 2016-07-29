@@ -44,7 +44,7 @@ public class ConstantRetryer<T> extends BaseRetryer<T> {
      * @param timeout the amount of time to wait between retries.
      * @param maxAttempts maximum number of attempts to perform. If value is -1 it will retry indefinitely.
      *
-     * @throws NullPointerException if either timeout is null.
+     * @throws NullPointerException if either timeout or retryCondition are null.
      * @throws IllegalArgumentException if maxAttempts is less than -1.
      */
     public ConstantRetryer(final Duration timeout, final int maxAttempts) {
@@ -57,7 +57,7 @@ public class ConstantRetryer<T> extends BaseRetryer<T> {
      *
      * @param timeout the amount of time to wait between retries.
      *
-     * @throws NullPointerException if either timeout is null.
+     * @throws NullPointerException if timeout is null.
      */
     public ConstantRetryer(final Duration timeout) {
         this(timeout, DEFAULT_MAX_ATTEMPTS, new DefaultRetryCondition<>());

@@ -9,6 +9,22 @@ import java.util.concurrent.TimeUnit;
 /**
  * Implementation of {@link Retryer} that times out a linear amount of time between retries.
  *
+ * <p>Suppose to have a class A with an method called myMethod() that returns
+ * a boolean, the code would be the following:
+ * {@code
+ * A myObject = new A();
+ * Retryer retryer = new LinearRetryer(Duration.ofSeconds(2), Duration.ofSeconds(10), 10);
+ * boolean outcome = retryer.retry(()-> myObject.myMethod());
+ * }
+ *
+ * <p>The retryer will attempt to call myMethod for a maximum of 10 times. The delay between the retries
+ * follows a linear function with base timeout to 2 seconds. The calculated time will be capped to 10 seconds:
+ *
+ * <p>
+ * number of attempts                  :  1 2 3 4 5 6  7  8  9  10
+ * timeouts between attempts in seconds:  0 2 4 6 8 10 10 10 10 10
+ * </p>
+ *
  * @param <T> the type of the return value.
  */
 public class LinearRetryer<T> extends BaseRetryer<T> {
@@ -32,7 +48,9 @@ public class LinearRetryer<T> extends BaseRetryer<T> {
      *
      * <p>This implementation waits a linear amount of time defined by baseTimeout.
      *
-     * @param baseTimeout the base tim used in linear back-off strategy.
+     * <p>In case baseTimeout is greater or equals to maxTimeout the retryer will use constant back-off strategy.
+     *
+     * @param baseTimeout the base time used in linear back-off strategy.
      * @param maxTimeout the calculated time will be capped to this value.
      * @param maxAttempts maximum number of attempts to perform. If value is -1 it will retry indefinitely.
      * @param retryCondition contains the logic for deciding whether a retry should occur or not.
@@ -50,7 +68,11 @@ public class LinearRetryer<T> extends BaseRetryer<T> {
     /**
      * Create a {@link LinearRetryer} with a {@link DefaultRetryCondition}.
      *
-     * @param baseTimeout the amount of time to wait between retries.
+     * <p>This implementation waits a linear amount of time defined by baseTimeout.
+     *
+     * <p>In case baseTimeout is greater or equals to maxTimeout the retryer will use constant back-off strategy.
+     *
+     * @param baseTimeout the base time used in linear back-off strategy.
      * @param maxTimeout the calculated time will be capped to this value.
      * @param maxAttempts maximum number of attempts to perform. If value is -1 it will retry indefinitely.
      *
@@ -65,7 +87,11 @@ public class LinearRetryer<T> extends BaseRetryer<T> {
      * Create a {@link LinearRetryer} with a {@link DefaultRetryCondition}
      * and a maximum number of retries equals to DEFAULT_MAX_ATTEMPTS.
      *
-     * @param baseTimeout the amount of time to wait between retries.
+     * <p>This implementation waits a linear amount of time defined by baseTimeout.
+     *
+     * <p>In case baseTimeout is greater or equals to maxTimeout the retryer will use constant back-off strategy.
+     *
+     * @param baseTimeout the base time used in linear back-off strategy.
      * @param maxTimeout the calculated time will be capped to this value.
      *
      * @throws NullPointerException if either baseTimeout or maxTimeout are null.
@@ -78,11 +104,8 @@ public class LinearRetryer<T> extends BaseRetryer<T> {
      * Create a {@link LinearRetryer} with a {@link DefaultRetryCondition}
      * and a maximum number of retries equals to DEFAULT_MAX_ATTEMPTS.
      *
-     * <p>The constant amount of time to wait between retries is zero.
-     * An instance of {@link LinearRetryer} created with default constructor is equivalent
-     * to a {@link ConstantRetryer} instance with zero timeout.
+     * <p>The amount of time to wait between retries is zero.
      *
-     * @see ConstantRetryer
      */
     public LinearRetryer() {
         this(Duration.ZERO, Duration.ZERO, DEFAULT_MAX_ATTEMPTS, new DefaultRetryCondition<>());

@@ -21,7 +21,7 @@ import java.util.Objects;
  *
  * @param <T> type of the returned value
  *
- * @see     ConstantRetryer
+ * @see     LinearRetryer
  * @since   0.1.0
  */
 public abstract class BaseRetryer<T> implements Retryer<T> {

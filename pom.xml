@@ -12,6 +12,7 @@
     <name>Guavaberry</name>
     <description>Guavaberry: A collection of Java libraries on hand</description>
     <url>https://github.com/fsquillace/guavaberry</url>
+
     <issueManagement>
         <url>https://github.com/fsquillace/guavaberry/issues</url>
         <system>GitHub Issues</system>
@@ -24,6 +25,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
     <developers>
         <developer>
             <email>feel.sqoox@gmail.com</email>
@@ -32,9 +34,17 @@
             <id>fsquillace</id>
         </developer>
     </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/fsquillace/guavaberry.git</connection>
+        <developerConnection>scm:git:ssh://github.com:fsquillace/guavaberry.git</developerConnection>
+        <url>http://github.com/fsquillace/guavaberry/tree/master</url>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <build>
         <plugins>
             <plugin>

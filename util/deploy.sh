@@ -14,8 +14,8 @@ if [ "$TRAVIS_BRANCH" == "dev" ]; then
 elif [ "$TRAVIS_BRANCH" == "master" ]; then
   echo "Uploading Guavaberry release to OSS..."
 
-  openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in util/pubring.gpg.enc -out ${HOME}/.gnupg/pubring.gpg -d
-  openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in util/secring.gpg.enc -out ${HOME}/.gnupg/secring.gpg -d
+  openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in util/pubring.gpg.enc -out util/pubring.gpg -d
+  openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in util/secring.gpg.enc -out util/secring.gpg -d
 
   # If branch master deploy a release instead of a snapshot
   sed -ie "s/-SNAPSHOT//" pom.xml

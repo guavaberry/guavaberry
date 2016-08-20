@@ -60,9 +60,6 @@
         <profile>
             <id>ossrh</id>
             <properties>
-                <gpg.executable>gpg</gpg.executable>
-                <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
-                <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
                 <gpg.defaultKeyring>true</gpg.defaultKeyring>
                 <gpg.publicKeyring>util/pubring.gpg</gpg.publicKeyring>
                 <gpg.secretKeyring>util/secring.gpg</gpg.secretKeyring>

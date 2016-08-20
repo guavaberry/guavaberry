@@ -6,7 +6,7 @@
 
     <groupId>com.github.guavaberry</groupId>
     <artifactId>guavaberry</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Guavaberry</name>
@@ -63,7 +63,7 @@
                 <gpg.executable>gpg</gpg.executable>
                 <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
                 <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
-                <gpg.defaultKeyring>false</gpg.defaultKeyring>
+                <gpg.defaultKeyring>true</gpg.defaultKeyring>
                 <gpg.publicKeyring>util/pubring.gpg</gpg.publicKeyring>
                 <gpg.secretKeyring>util/secring.gpg</gpg.secretKeyring>
             </properties>

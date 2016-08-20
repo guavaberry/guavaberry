@@ -17,6 +17,8 @@ elif [ "$TRAVIS_BRANCH" == "master" ]; then
   openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in util/pubring.gpg.enc -out util/pubring.gpg -d
   openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in util/secring.gpg.enc -out util/secring.gpg -d
 
+  ls -la util/
+
   # If branch master deploy a release instead of a snapshot
   sed -ie "s/-SNAPSHOT//" pom.xml
 

@@ -21,7 +21,7 @@ install:
   - mvn -B install -U -DskipTests=true -Dgpg.skip=true
 
 script:
-  - mvn -B verify -U -Dmaven.javadoc.skip=true
+  - mvn -B verify -U -Dgpg.skip=true -Dmaven.javadoc.skip=true
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

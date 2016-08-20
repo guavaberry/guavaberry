@@ -7,4 +7,4 @@
 
 <!--  Links -->
 
-[v010]: https://github.com/fsquillace/guavaberry/releases/tag/0.1.0
+[v010]: https://github.com/guavaberry/guavaberry/releases/tag/0.1.0

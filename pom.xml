@@ -4,17 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.guavaberry</groupId>
+    <groupId>com.github.guavaberry</groupId>
     <artifactId>guavaberry</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <name>Guavaberry</name>
     <description>Guavaberry: A collection of Java libraries on hand</description>
-    <url>https://github.com/fsquillace/guavaberry</url>
+    <url>https://github.com/guavaberry/guavaberry</url>
 
     <issueManagement>
-        <url>https://github.com/fsquillace/guavaberry/issues</url>
+        <url>https://github.com/guavaberry/guavaberry/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
 
@@ -36,17 +36,54 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/fsquillace/guavaberry.git</connection>
-        <developerConnection>scm:git:ssh://github.com:fsquillace/guavaberry.git</developerConnection>
-        <url>http://github.com/fsquillace/guavaberry/tree/master</url>
+        <connection>scm:git:git://github.com/guavaberry/guavaberry.git</connection>
+        <developerConnection>scm:git:ssh://github.com:guavaberry/guavaberry.git</developerConnection>
+        <url>http://github.com/guavaberry/guavaberry/tree/master</url>
     </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.github.github</groupId>
                 <artifactId>downloads-maven-plugin</artifactId>
@@ -63,6 +100,20 @@
                             <goal>upload</goal>
                         </goals>
                         <phase>site-deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

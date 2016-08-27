@@ -46,20 +46,6 @@ under the License.
           <tbody>
                           <tr>
                 <td>
-                  <a href="https://github.com/guavaberry/guavaberry/checkstyle.html#org.guavaberry.collections.package-info.java">org/guavaberry/collections/package-info.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/guavaberry/guavaberry/checkstyle.html#org.guavaberry.collections.DefaultHashMap.java">org/guavaberry/collections/DefaultHashMap.java</a>
                 </td>
                 <td>
@@ -74,7 +60,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/guavaberry/guavaberry/checkstyle.html#org.guavaberry.retryer.package-info.java">org/guavaberry/retryer/package-info.java</a>
+                  <a href="https://github.com/guavaberry/guavaberry/checkstyle.html#org.guavaberry.collections.package-info.java">org/guavaberry/collections/package-info.java</a>
                 </td>
                 <td>
                   0
@@ -89,6 +75,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/guavaberry/guavaberry/checkstyle.html#org.guavaberry.retryer.WaitStrategies.java">org/guavaberry/retryer/WaitStrategies.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/guavaberry/guavaberry/checkstyle.html#org.guavaberry.retryer.package-info.java">org/guavaberry/retryer/package-info.java</a>
                 </td>
                 <td>
                   0

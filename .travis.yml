@@ -37,8 +37,7 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
   - util/deploy.sh
 
-# To deploy the site is required Maven 3.3.x:
-# https://cwiki.apache.org/confluence/display/MAVEN/AetherClassNotFound
-# https://github.com/github/maven-plugins/issues/46
-#after_success:
-  #- util/deploy-site.sh
+  # To deploy the site is required Maven 3.3.x:
+  # https://cwiki.apache.org/confluence/display/MAVEN/AetherClassNotFound
+  # https://github.com/github/maven-plugins/issues/46
+  - util/deploy-site.sh

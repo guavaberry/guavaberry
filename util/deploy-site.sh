@@ -4,11 +4,12 @@
 
 set -e -u
 
+mvn clean site-deploy --settings="util/deploy-settings.xml" -DskipTests=true -Dgpg.skip=true
+
 if [ "$TRAVIS_BRANCH" == "dev" ] || \
    [ "$TRAVIS_BRANCH" == "master" ]; then
   echo "Publishing Guavaberry site..."
 
-  mvn clean site-deploy --settings="util/deploy-settings.xml" -DskipTests=true -Dgpg.skip=true
 
   echo "Guavaberry site published."
 fi

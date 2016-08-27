@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultHashMap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Guavaberry</a> &gt; <a href="index.source.html" class="el_package">org.guavaberry.collections</a> &gt; <span class="el_source">DefaultHashMap.java</span></div><h1>DefaultHashMap.java</h1><pre class="source lang-java linenums">package org.guavaberry.collections;
+
+import org.guavaberry.function.NullaryOperator;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * This is the Java implementation of the
+ * &lt;a href=&quot;https://docs.python.org/3.6/library/collections.html#collections.defaultdict&quot;&gt;Python defaultdict&lt;/a&gt;.
+ *
+ * {@link DefaultHashMap} is a subclass of {@link HashMap} that overrides
+ * only the method {@link HashMap#get(Object)}. This class accepts as argument
+ * an instance factory. If a certain key is missing in the map,
+ * the class produces a default instance and returns it as a value.
+ *
+ * &lt;p&gt;The remaining functionality is the same as for the {@link HashMap} class
+ * and is not documented here.
+ *
+ * &lt;p&gt;An example on how to use {@link DefaultHashMap}:
+ * &lt;pre&gt;
+ * {@code
+ *     DefaultHashMap&lt;Integer, List&lt;String&gt;&gt; map = new DefaultHashMap(() -&gt; new ArrayList&lt;&gt;());
+ *     map.get(11).add(&quot;first&quot;);
+ * }
+ * &lt;/pre&gt;
+ *
+ * @author  Filippo Squillace
+ *
+ * @param &lt;K&gt; the type of keys maintained by this map
+ * @param &lt;V&gt; the type of mapped values
+ *
+ * @see     HashMap
+ * @since   0.1.0
+ */
+public class DefaultHashMap&lt;K, V&gt; extends HashMap&lt;K, V&gt; {
+    /**
+     * The factory instance invoked during a missing entry.
+     */
+    private final NullaryOperator&lt;V&gt; operator;
+
+    /**
+     * Constructs an empty &lt;tt&gt;HashMap&lt;/tt&gt; with the specified initial
+     * capacity and load factor.
+     *
+     * @param  operator the instance factory
+     * @param  initialCapacity the initial capacity
+     * @param  loadFactor      the load factor
+     * @throws IllegalArgumentException if the initial capacity is negative
+     *         or the load factor is nonpositive
+     */
+    public DefaultHashMap(final NullaryOperator&lt;V&gt; operator, final int initialCapacity,
+                          final float loadFactor) {
+<span class="fc" id="L55">        super(initialCapacity, loadFactor);</span>
+<span class="fc" id="L56">        Objects.requireNonNull(operator);</span>
+<span class="fc" id="L57">        this.operator = operator;</span>
+<span class="fc" id="L58">    }</span>
+
+    /**
+     * Constructs an empty &lt;tt&gt;HashMap&lt;/tt&gt; with the specified initial
+     * capacity and the default load factor (0.75).
+     *
+     * @param  operator the instance factory
+     * @param  initialCapacity the initial capacity.
+     * @throws IllegalArgumentException if the initial capacity is negative.
+     */
+    public DefaultHashMap(final NullaryOperator&lt;V&gt; operator,
+                          final int initialCapacity) {
+<span class="fc" id="L70">        super(initialCapacity);</span>
+<span class="fc" id="L71">        Objects.requireNonNull(operator);</span>
+<span class="fc" id="L72">        this.operator = operator;</span>
+<span class="fc" id="L73">    }</span>
+
+    /**
+     * Constructs an empty &lt;tt&gt;HashMap&lt;/tt&gt; with the default initial capacity
+     * (16) and the default load factor (0.75).
+     *
+     * @param  operator the instance factory
+     */
+    public DefaultHashMap(final NullaryOperator&lt;V&gt; operator) {
+<span class="fc" id="L82">        super();</span>
+<span class="fc" id="L83">        Objects.requireNonNull(operator);</span>
+<span class="fc" id="L84">        this.operator = operator;</span>
+<span class="fc" id="L85">    }</span>
+
+    /**
+     * Constructs a new &lt;tt&gt;HashMap&lt;/tt&gt; with the same mappings as the
+     * specified &lt;tt&gt;Map&lt;/tt&gt;.  The &lt;tt&gt;HashMap&lt;/tt&gt; is created with
+     * default load factor (0.75) and an initial capacity sufficient to
+     * hold the mappings in the specified &lt;tt&gt;Map&lt;/tt&gt;.
+     *
+     * @param  operator the instance factory
+     * @param  otherMap the map whose mappings are to be placed in this map
+     * @throws  NullPointerException if the specified map is null
+     */
+    public DefaultHashMap(final NullaryOperator&lt;V&gt; operator,
+                          final Map&lt;? extends K, ? extends V&gt; otherMap) {
+<span class="fc" id="L99">        super(otherMap);</span>
+<span class="fc" id="L100">        Objects.requireNonNull(operator);</span>
+<span class="fc" id="L101">        this.operator = operator;</span>
+<span class="fc" id="L102">    }</span>
+
+    /**
+     * Returns the value to which the specified key is mapped,
+     * or a default value generated by the instance factory if this map
+     * contains no mapping for the key.
+     *
+     * &lt;p&gt;By calling this method multiple times passing the same key, the method will return
+     * the same value (idempotent).
+     *
+     * @param key the key for the lookup
+     * @return the mapped value or a default default if key does not exist in the map
+     *
+     * @see #put(Object, Object)
+     */
+    @Override
+    public final V get(final Object key) {
+<span class="fc" id="L119">        V value = super.get(key);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L121">            value = operator.op();</span>
+        }
+        // The following guarantees idempotent call to get method
+<span class="fc" id="L124">        put((K) key, value);</span>
+<span class="fc" id="L125">        return value;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

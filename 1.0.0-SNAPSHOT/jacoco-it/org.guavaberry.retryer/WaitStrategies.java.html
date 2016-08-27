@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WaitStrategies.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Guavaberry</a> &gt; <a href="index.source.html" class="el_package">org.guavaberry.retryer</a> &gt; <span class="el_source">WaitStrategies.java</span></div><h1>WaitStrategies.java</h1><pre class="source lang-java linenums">package org.guavaberry.retryer;
+
+import com.github.rholder.retry.Attempt;
+import com.github.rholder.retry.WaitStrategy;
+import com.google.common.base.Preconditions;
+
+import javax.annotation.concurrent.Immutable;
+import java.time.Duration;
+import java.util.Objects;
+import java.util.Random;
+
+/**
+ * Factory class for instances of {@link WaitStrategy}.
+ *
+ * &lt;p&gt;These factories return wait strategies that can be used with the library
+ * &lt;a href=https://github.com/rholder/guava-retrying&gt;Guava Retrying&lt;/a&gt;.
+ *
+ * &lt;p&gt;There are three wait strategies documented below: {@link ExponentialJitterWaitStrategy},
+ * {@link ExponentialWaitStrategy} and {@link CompositeJitterWaitStrategy}.
+ *
+ * &lt;h2&gt;{@link ExponentialJitterWaitStrategy}&lt;/h2&gt;
+ * This implementation of {@link WaitStrategy} is helpful whenever there are competing clients that
+ * are trying to call a remote server at the same time.
+ *
+ * &lt;p&gt;The main benefits of this strategy is that it avoids overwhelming the server by multiple requests
+ * by slowing clients down using the classic exponential backoff.
+ * Moreover, since the reason of an impaired server might be due to the wave of requests coming
+ * from the clients, this strategy introduce an element of randomness (aka jitter) that ensures
+ * the requests are spread out along a randomized interval that grows exponentially for each attempt.
+ * The retry is capped to a maximum timeout in order to avoid the interval to grow indefinitely.
+ *
+ * &lt;p&gt;The interval for the i-th retry is calculated in the following way:
+ * {@code
+ *   min_value = exponential_wait * (1 - randomization_factor)
+ *   max_value = exponential_wait
+ * }
+ *
+ * &lt;p&gt;Where {@code exponential_wait} is the exponential time calculated for the i-th attempt and
+ * {@code randomization_factor} is a double belonging to the interval [0.0, 1.0].
+ *
+ * &lt;p&gt;Example:
+ * Let's suppose that the randomization factor is 0.5, the base timeout is one second and the max timeout is 10 seconds.
+ * For five retries the sequence will be (values in seconds):
+ *
+ * &lt;table summary=&quot;&quot;&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;Attempt&lt;/td&gt;&lt;td&gt;Interval&lt;/td&gt;
+ *   &lt;/tr&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;1&lt;/td&gt;&lt;td&gt;[0.5, 1]&lt;/td&gt;
+ *   &lt;/tr&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;2&lt;/td&gt;&lt;td&gt;[1, 2]&lt;/td&gt;
+ *   &lt;/tr&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;3&lt;/td&gt;&lt;td&gt;[2, 4]&lt;/td&gt;
+ *   &lt;/tr&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;4&lt;/td&gt;&lt;td&gt;[4, 8]&lt;/td&gt;
+ *   &lt;/tr&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;5&lt;/td&gt;&lt;td&gt;[5, 10]&lt;/td&gt;
+ *   &lt;/tr&gt;
+ * &lt;/table&gt;
+ *
+ * &lt;p&gt;Choose the randomization factor wisely according to your use case.
+ * The more the randomization factor tends to zero the more the retry behavior will look like the classic
+ * exponential backoff. This can be useful whenever we know that the cause of an impaired server is not due to the
+ * competing clients. Conversely, the more the randomization factor tends to one the more the requests will be
+ * spread along the interval, allowing the server to digest the request more gradually and reducing contention
+ * between competing clients.
+ *
+ * &lt;h2&gt;{@link ExponentialWaitStrategy}&lt;/h2&gt;
+ * This is a refactor of {@link com.github.rholder.retry.WaitStrategies#exponentialWait()} class based on
+ * {@link Duration} instead of long for declaring the delays.
+ *
+ * &lt;p&gt;The main benefits of this strategy is that it avoids overwhelming the server by multiple requests
+ * by slowing clients down using the classic exponential backoff.
+ * The retry is capped to a maximum timeout in order to avoid the interval to grow indefinitely.
+ *
+ * &lt;p&gt;The timeout for the i-th attempt is calculated in the following way:
+ * {@code
+ *   exponential_wait = min(max_timeout, 2**(attempts-1))
+ * }
+ *
+ * &lt;p&gt;Where {@code attempt} is the number of current attempts and {@code max_timeout} is the capped value for the
+ * calculated timeout.
+ *
+ * &lt;p&gt;Example:
+ * Let's suppose that the base timeout is one second and the max timeout is 10 seconds.
+ * For five retries the sequence will be (values in seconds):
+ *
+ * &lt;table summary=&quot;&quot;&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;Attempt&lt;/td&gt;&lt;td&gt;Timeout&lt;/td&gt;
+ *   &lt;/tr&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;1&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;
+ *   &lt;/tr&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;2&lt;/td&gt;&lt;td&gt;2&lt;/td&gt;
+ *   &lt;/tr&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;3&lt;/td&gt;&lt;td&gt;4&lt;/td&gt;
+ *   &lt;/tr&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;4&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;
+ *   &lt;/tr&gt;
+ *   &lt;tr&gt;
+ *      &lt;td&gt;5&lt;/td&gt;&lt;td&gt;10&lt;/td&gt;
+ *   &lt;/tr&gt;
+ * &lt;/table&gt;
+ *
+ * &lt;p&gt;This strategy is equivalent to {@link ExponentialJitterWaitStrategy} with randomization factor equals to zero.
+ *
+ * &lt;h2&gt;CompositeJitterWaitStrategy&lt;/h2&gt;
+ * This implementation of {@link WaitStrategy} helps you combining an existing waiting strategy with
+ * a randomization factor.
+ *
+ * &lt;p&gt;The interval for the i-th retry is calculated in the following way:
+ * {@code
+ *   min_value = wait * (1 - randomization_factor)
+ *   max_value = wait
+ * }
+ *
+ * &lt;p&gt;Where {@code wait} is the wait time calculated for the i-th attempt by the existing waiting strategy and
+ * {@code randomization_factor} is a double belonging to the interval [0.0, 1.0].
+ *
+ *
+ * @author Filippo Squillace
+ *
+ * @see com.github.rholder.retry.Retryer
+ * @see com.github.rholder.retry.WaitStrategies
+ */
+public final class WaitStrategies {
+
+    /**
+     * Private constructor.
+     */
+<span class="nc" id="L140">    private WaitStrategies() { }</span>
+
+    /**
+     * The default randomization factor (0.5).
+     */
+    private static final double DEFAULT_RANDOMIZATION_FACTOR = 0.5D;
+
+    /**
+     * The default base timeout (1 second).
+     */
+<span class="fc" id="L150">    private static final Duration DEFAULT_BASE_TIMEOUT = Duration.ofSeconds(1L);</span>
+
+    /**
+     * Return an instance of {@link ExponentialJitterWaitStrategy} with the default base timeout (1 second), the default
+     * randomization factor (0.5) and without a max timeout.
+     *
+     * @return instance of {@link ExponentialJitterWaitStrategy}
+     */
+    public static WaitStrategy exponentialJitterWait() {
+<span class="fc" id="L159">        return exponentialJitterWait(DEFAULT_BASE_TIMEOUT,</span>
+<span class="fc" id="L160">                                     Duration.ofMillis(Long.MAX_VALUE), DEFAULT_RANDOMIZATION_FACTOR);</span>
+    }
+
+    /**
+     * Return an instance of {@link ExponentialJitterWaitStrategy} with the default base timeout (1 second) and
+     * the default randomization factor (0.5).
+     *
+     * @param maxTimeout the calculated time will be capped to this value.
+     *
+     * @return instance of {@link ExponentialJitterWaitStrategy}
+     */
+    public static WaitStrategy exponentialJitterWait(final Duration maxTimeout) {
+<span class="fc" id="L172">        return exponentialJitterWait(DEFAULT_BASE_TIMEOUT, maxTimeout, DEFAULT_RANDOMIZATION_FACTOR);</span>
+    }
+
+    /**
+     * Return an instance of {@link ExponentialJitterWaitStrategy} with the default randomization factor (0.5).
+     *
+     * @param baseTimeout the base time delay.
+     * @param maxTimeout the calculated time will be capped to this value.
+     *
+     * @return instance of {@link ExponentialJitterWaitStrategy}
+     */
+    public static WaitStrategy exponentialJitterWait(final Duration baseTimeout, final Duration maxTimeout) {
+<span class="fc" id="L184">        return exponentialJitterWait(baseTimeout, maxTimeout, DEFAULT_RANDOMIZATION_FACTOR);</span>
+    }
+
+    /**
+     * Return an instance of {@link ExponentialJitterWaitStrategy} with the default base timeout (1 second).
+     *
+     * @param maxTimeout the calculated time will be capped to this value.
+     * @param randomizationFactor the randomization factor for creating a range around the retry interval.
+     *
+     * @return instance of {@link ExponentialJitterWaitStrategy}
+     */
+    public static WaitStrategy exponentialJitterWait(final Duration maxTimeout,
+                                                     final double randomizationFactor) {
+<span class="fc" id="L197">        return exponentialJitterWait(DEFAULT_BASE_TIMEOUT, maxTimeout, randomizationFactor);</span>
+    }
+
+    /**
+     * Return an instance of {@link ExponentialJitterWaitStrategy}.
+     *
+     * @param baseTimeout the base time delay.
+     * @param maxTimeout the calculated time will be capped to this value.
+     * @param randomizationFactor the randomization factor for creating a range around the retry interval.
+     *
+     * @return instance of {@link ExponentialJitterWaitStrategy}
+     */
+    public static WaitStrategy exponentialJitterWait(final Duration baseTimeout,
+                                                     final Duration maxTimeout,
+                                                     final double randomizationFactor) {
+<span class="fc" id="L212">        return new ExponentialJitterWaitStrategy(baseTimeout, maxTimeout,</span>
+                                                 randomizationFactor);
+    }
+
+    /**
+     * Return an instance of {@link ExponentialWaitStrategy}.
+     *
+     * @param baseTimeout the base time delay.
+     * @param maxTimeout the calculated time will be capped to this value.
+     *
+     * @return instance of {@link ExponentialWaitStrategy}
+     */
+    public static WaitStrategy exponentialWait(final Duration baseTimeout,
+                                               final Duration maxTimeout) {
+<span class="fc" id="L226">        return new ExponentialWaitStrategy(baseTimeout, maxTimeout);</span>
+    }
+
+    /**
+     * Return an instance of {@link ExponentialWaitStrategy}.
+     *
+     * @param maxTimeout the calculated time will be capped to this value.
+     *
+     * @return instance of {@link ExponentialWaitStrategy}
+     */
+    public static WaitStrategy exponentialWait(final Duration maxTimeout) {
+<span class="fc" id="L237">        return new ExponentialWaitStrategy(DEFAULT_BASE_TIMEOUT, maxTimeout);</span>
+    }
+
+    /**
+     * Return an instance of {@link CompositeJitterWaitStrategy}.
+     *
+     * @param waitStrategy the wait strategy used for combining with the random interval
+     *                     generated by the randomization factor.
+     * @param randomizationFactor the randomization factor for creating a range around the retry interval.
+     *
+     * @return instance of {@link CompositeJitterWaitStrategy}
+     */
+    public static WaitStrategy compositeJitterWait(final WaitStrategy waitStrategy,
+                                                   final double randomizationFactor) {
+<span class="fc" id="L251">        return new CompositeJitterWaitStrategy(waitStrategy, randomizationFactor);</span>
+    }
+
+    /**
+     * The wait strategy that combines the exponential behavior with randomness based on a randomization factor.
+     */
+    @Immutable
+    private static final class ExponentialJitterWaitStrategy implements WaitStrategy {
+        /**
+         * The wait strategy used for calculate the random range around the exponential retry interval.
+         */
+        private final WaitStrategy jitterWaitStrategy;
+
+        /**
+         * Construct an instance of {@link ExponentialJitterWaitStrategy}.
+         *
+         * @param baseTimeout the base time delay.
+         * @param maxTimeout the calculated time will be capped to this value.
+         * @param randomizationFactor the randomization factor for creating a range around the retry interval.
+         */
+        ExponentialJitterWaitStrategy(final Duration baseTimeout, final Duration maxTimeout,
+<span class="fc" id="L272">                                             final double randomizationFactor) {</span>
+<span class="fc" id="L273">            jitterWaitStrategy = new CompositeJitterWaitStrategy(exponentialWait(baseTimeout, maxTimeout),</span>
+                                                                 randomizationFactor);
+<span class="fc" id="L275">        }</span>
+
+        /**
+         * @param failedAttempt the current failed attempt.
+         * @return the calculated wait time in milliseconds.
+         */
+        public long computeSleepTime(final Attempt failedAttempt) {
+<span class="fc" id="L282">            Objects.requireNonNull(failedAttempt, &quot;The failedAttempt may not be null&quot;);</span>
+<span class="fc" id="L283">            return jitterWaitStrategy.computeSleepTime(failedAttempt);</span>
+        }
+    }
+
+    /**
+     * The wait strategy for exponential back off.
+     */
+    @Immutable
+    private static final class ExponentialWaitStrategy implements WaitStrategy {
+        /**
+         * The base time delay.
+         */
+        private final Duration baseTimeout;
+
+        /**
+         * The calculated time will be capped to this value.
+         */
+        private final Duration maxTimeout;
+
+        /**
+         * Construct an instance of {@link ExponentialWaitStrategy}.
+         *
+         * @param baseTimeout the base time delay.
+         * @param maxTimeout the calculated time will be capped to this value.
+         */
+        ExponentialWaitStrategy(final Duration baseTimeout,
+<span class="fc" id="L309">                                       final Duration maxTimeout) {</span>
+<span class="fc" id="L310">            Objects.requireNonNull(baseTimeout, &quot;The base timeout may not be null&quot;);</span>
+<span class="fc" id="L311">            Objects.requireNonNull(maxTimeout, &quot;The maximum timeout may not be null&quot;);</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">            Preconditions.checkArgument(baseTimeout.toMillis() &gt;= 0L, &quot;baseTimeout must be &gt; 0 but is %s&quot;, baseTimeout);</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">            Preconditions.checkArgument(maxTimeout.toMillis() &gt;= 0L, &quot;maxTimeout must be &gt;= 0 but is %s&quot;, maxTimeout);</span>
+<span class="fc" id="L314">            this.baseTimeout = baseTimeout;</span>
+<span class="fc" id="L315">            this.maxTimeout = maxTimeout;</span>
+<span class="fc" id="L316">        }</span>
+
+        /**
+         * @param failedAttempt the current failed attempt.
+         * @return the calculated wait time in milliseconds.
+         */
+        @Override
+        public long computeSleepTime(final Attempt failedAttempt) {
+<span class="fc" id="L324">            Objects.requireNonNull(failedAttempt, &quot;The failedAttempt may not be null&quot;);</span>
+<span class="fc" id="L325">            double exp = Math.pow(2, failedAttempt.getAttemptNumber() - 1);</span>
+<span class="fc" id="L326">            long waitTime = Math.round(baseTimeout.toMillis() * exp);</span>
+
+<span class="fc bfc" id="L328" title="All 2 branches covered.">            if (waitTime &gt; maxTimeout.toMillis()) {</span>
+<span class="fc" id="L329">                return maxTimeout.toMillis();</span>
+            }
+<span class="fc" id="L331">            return waitTime;</span>
+        }
+    }
+
+    /**
+     * This implementation of {@link WaitStrategy} helps you combining an existing waiting strategy with
+     * a randomization factor.
+     */
+    @Immutable
+    private static final class CompositeJitterWaitStrategy implements WaitStrategy {
+        /**
+         * The wait strategy used for combining with the random interval generated by the randomization factor.
+         */
+        private final WaitStrategy waitStrategy;
+        /**
+         * The randomization factor for creating a range around the retry interval.
+         */
+        private final double randomizationFactor;
+
+        /**
+         * Construct an instance of {@link CompositeJitterWaitStrategy}.
+         *
+         * @param waitStrategy the wait strategy used for combining with the random interval
+         *                     generated by the randomization factor.
+         * @param randomizationFactor the randomization factor for creating a range around the retry interval.
+         */
+<span class="fc" id="L357">        CompositeJitterWaitStrategy(final WaitStrategy waitStrategy, final double randomizationFactor) {</span>
+<span class="fc" id="L358">            Objects.requireNonNull(waitStrategy, &quot;The wait strategy may not be null&quot;);</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">            Preconditions.checkArgument(randomizationFactor &gt;= 0.0D, &quot;randomizationFactor must be &gt;= 0.0 but is %s&quot;,</span>
+<span class="fc" id="L360">                                        randomizationFactor);</span>
+<span class="fc bfc" id="L361" title="All 2 branches covered.">            Preconditions.checkArgument(randomizationFactor &lt;= 1.0D, &quot;randomizationFactor must be &gt;= 1.0 but is %s&quot;,</span>
+<span class="fc" id="L362">                                        randomizationFactor);</span>
+<span class="fc" id="L363">            this.waitStrategy = waitStrategy;</span>
+<span class="fc" id="L364">            this.randomizationFactor = randomizationFactor;</span>
+<span class="fc" id="L365">        }</span>
+
+        /**
+         * @param failedAttempt the current failed attempt.
+         * @return the calculated wait time in milliseconds.
+         */
+        public long computeSleepTime(final Attempt failedAttempt) {
+<span class="fc" id="L372">            Objects.requireNonNull(failedAttempt, &quot;The failedAttempt may not be null&quot;);</span>
+<span class="fc" id="L373">            long waitTime = waitStrategy.computeSleepTime(failedAttempt);</span>
+<span class="fc" id="L374">            long minRange = (long) (waitTime * (1 - randomizationFactor));</span>
+
+<span class="fc" id="L376">            return new Random().longs(1L, minRange, waitTime + 1).findFirst().getAsLong();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
